@@ -27,8 +27,24 @@ DEV_MODE = os.getenv("DEV_MODE", "0") == "1"
 ROOMS: dict[str, Room] = {}
 SOCKETS: dict[str, set[WebSocket]] = {}
 ROOM_LOCK = asyncio.Lock()
+
 BOT_TASK: asyncio.Task | None = None
 BOT_INSTANCE: Bot | None = None
+
+
+@contextlib.asynccontextmanager
+async def lifespan(_app: FastAPI):
+    global BOT_TASK
+    BOT_TASK = asyncio.create_task(run_bot())
+    yield
+    if BOT_TASK:
+        BOT_TASK.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await BOT_TASK
+    BOT_TASK = None
+
+
+app = FastAPI(title="Durak Telegram Game", lifespan=lifespan)
 
 
 def validate_init_data(raw: str) -> dict[str, str]:
@@ -259,19 +275,6 @@ async def run_bot() -> None:
         with contextlib.suppress(Exception):
             await BOT_INSTANCE.session.close()
         BOT_INSTANCE = None
-
-
-@contextlib.asynccontextmanager
-async def lifespan(_app: FastAPI):
-    global BOT_TASK
-    BOT_TASK = asyncio.create_task(run_bot())
-    yield
-    if BOT_TASK:
-        BOT_TASK.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
-            await BOT_TASK
-
-
 
 
 if __name__ == "__main__":
