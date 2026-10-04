@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: durak-telegram-game
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
+      - key: APP_SHORT_NAME
+        value: durak
