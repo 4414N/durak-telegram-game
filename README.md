@@ -1,21 +1,27 @@
-# Дурак — Telegram Mini App
+# Дурак — Telegram Mini App v2
 
-Telegram Mini App + FastAPI/WebSocket + aiogram. Максимум 3 игрока.
+Полноценная 2–3 player Podkidnoy Durak для Telegram.
 
 ## Render
-1. Создайте **Web Service** из GitHub-репозитория.
-2. Runtime: **Docker**. Render возьмёт `Dockerfile` из корня.
-3. Добавьте Environment Variables:
-   - `BOT_TOKEN` = новый токен бота
-   - `APP_SHORT_NAME` = имя Mini App из @BotFather (например `durak`)
-   - `PUBLIC_URL` = URL сервиса Render (например `https://durak-telegram-game.onrender.com`)
-4. Health Check Path: `/health` (в `render.yaml` уже задан).
-5. Для Docker Build/Start Commands ничего задавать не нужно.
 
-Render должен передать приложению `PORT`; приложение слушает `0.0.0.0:$PORT`. Render также поддерживает WebSocket для web services.
+Создай Web Service из GitHub-репозитория. Runtime: Docker. Build/Start Command не заполняй.
 
-## Локально
-```bash
-pip install -r requirements.txt
-BOT_TOKEN=... python main.py
-```
+Environment Variables:
+
+- `BOT_TOKEN` — новый токен бота.
+- `APP_SHORT_NAME` — короткое имя Mini App, например `durak`.
+- `BOT_USERNAME` — username бота без `@` (необязательно, бот сам определит его при запуске).
+
+После деплоя проверь `/health`.
+
+## BotFather
+
+Настрой Main Mini App с тем же short name и URL сервиса. Также можно оставить бот-меню: приложение автоматически пытается установить кнопку `🃏 Дурак`.
+
+## Группы
+
+Для мультиплеера используй direct link Mini App из сообщения в группе:
+
+`https://t.me/<bot_username>/<app_short_name>`
+
+Telegram передаёт `chat_instance` для Mini App, запущенного прямой ссылкой в текущем чате, что позволяет разделять игровые столы по контексту чата. При создании комнаты также используется `startapp=room_<id>`, чтобы приглашённые попадали за один стол.
